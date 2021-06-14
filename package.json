@@ -1,18 +1,20 @@
 {
   "name": "casbin-mongoose",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Casbin Adapters for Mongoose",
-  "main": "src/index.ts",
+  "main": "index.ts",
   "repository": "https://github.com/minhducck/casbin-mongoose-adapter.git",
   "author": "Ta Minh Duc",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build": "tsc --project ./"
   },
+  "dependencies": {},
   "devDependencies": {
-    "casbin": "^5.7.2",
-    "mongoose": "^5.12.13",
-    "object-hash": "^2.2.0",
+    "@types/mongoose": "^5.11.97",
+    "casbin": "^5.7.0",
+    "object-hash": "*",
     "typescript": "^4.3.2"
   }
 }
