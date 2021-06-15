@@ -11,4 +11,4 @@ export interface ICasbinRule {
 }
 
 export interface ICasbinRuleDocument extends Document<ICasbinRule>, ICasbinRule {}
-export interface ICasbinRuleModel extends Model<ICasbinRuleDocument> {}
+export interface ICasbinRuleModel extends Model<Document<ICasbinRule>> {}

@@ -10,8 +10,8 @@ import {
   ICasbinRule,
   ICasbinRuleDocument, ICasbinRuleModel
 } from "./interface/casbin-rule.interface";
-
-const objectHash = require('object-hash');
+import {CasbinRuleSchema} from "./schema/casbin-rule.schema";
+import objectHash from 'object-hash'
 
 export class CasbinMongooseAdapter implements Adapter {
   protected policiesStorage: IPolicyStorage = {};
@@ -31,9 +31,10 @@ export class CasbinMongooseAdapter implements Adapter {
     this.collectionName = collectionName;
   }
 
-  private resolveStoreKey = (...args: any[]): string => objectHash.hash(args);
+  private resolveStoreKey = (...args: any[]): string => objectHash(args);
 
   async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
+    console.log(sec, ptype, rule);
     const key = this.resolveStoreKey(sec, ptype, rule);
 
     if (this.policiesStorage[key] === undefined) {
@@ -125,7 +126,9 @@ export class CasbinMongooseAdapter implements Adapter {
         }
       }
 
-      await CasbinRule.collection.insertMany(lines);
+      console.log(lines);
+
+      lines.length && await CasbinRule.collection.insertMany(lines);
 
     } catch (err) {
       console.error(err);
@@ -159,7 +162,7 @@ export class CasbinMongooseAdapter implements Adapter {
   }
 
   private newDbModelLine(ptype: any, rule: string[]) {
-    const dbModelConstructor = this.getConnection().model(this.collectionName);
+    const dbModelConstructor = this.getDbModel(this.collectionName);
     return new dbModelConstructor({
       p_type: ptype,
       v0: rule[0] || '',
@@ -171,5 +174,7 @@ export class CasbinMongooseAdapter implements Adapter {
     } as ICasbinRule)
   }
 
-  private getDbModel = (name: string): ICasbinRuleModel => this.getConnection().model(name);
+  private getDbModel = (name: string): ICasbinRuleModel => {
+    return this.getConnection().model(name);
+  }
 }
