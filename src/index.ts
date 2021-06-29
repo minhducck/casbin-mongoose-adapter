@@ -17,6 +17,7 @@ export class CasbinMongooseAdapter implements Adapter {
   protected policiesStorage: IPolicyStorage = {};
   private readonly connection: MongooseConnection | null;
   private readonly collectionName: string = 'casbin-rule';
+  public isFiltered: boolean = false
 
   /**
    * Can use with custom initialized Mongoose Connection.
@@ -31,10 +32,11 @@ export class CasbinMongooseAdapter implements Adapter {
     this.collectionName = collectionName;
   }
 
-  private resolveStoreKey = (...args: any[]): string => objectHash(args);
+  private resolveStoreKey = (...args: any[]): string => {
+    return objectHash(args);
+  }
 
   async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
-    console.log(sec, ptype, rule);
     const key = this.resolveStoreKey(sec, ptype, rule);
 
     if (this.policiesStorage[key] === undefined) {
@@ -125,8 +127,6 @@ export class CasbinMongooseAdapter implements Adapter {
           lines.push(this.newDbModelLine(ptype, rule));
         }
       }
-
-      console.log(lines);
 
       lines.length && await CasbinRule.collection.insertMany(lines);
 
