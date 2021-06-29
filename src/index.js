@@ -35,14 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CasbinMongooseAdapter = void 0;
 var casbin_1 = require("casbin");
 var mongoose_1 = require("mongoose");
-var object_hash_1 = __importDefault(require("object-hash"));
+var objectHash = require('object-hash');
 var CasbinMongooseAdapter = /** @class */ (function () {
     /**
      * Can use with custom initialized Mongoose Connection.
@@ -52,17 +49,14 @@ var CasbinMongooseAdapter = /** @class */ (function () {
         if (collectionName === void 0) { collectionName = 'casbin-rule'; }
         this.policiesStorage = {};
         this.collectionName = 'casbin-rule';
-        this.isFiltered = false;
         this.resolveStoreKey = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            return object_hash_1.default(args);
+            return objectHash.hash(args);
         };
-        this.getDbModel = function (name) {
-            return _this.getConnection().model(name);
-        };
+        this.getDbModel = function (name) { return _this.getConnection().model(name); };
         this.connection = connection || mongoose_1.createConnection(uri, connectionOptions);
         this.collectionName = collectionName;
     }
@@ -157,11 +151,11 @@ var CasbinMongooseAdapter = /** @class */ (function () {
     };
     CasbinMongooseAdapter.prototype.savePolicy = function (model) {
         return __awaiter(this, void 0, void 0, function () {
-            var lines, policyRuleAST, groupingPolicyAST, CasbinRule, _i, policyRuleAST_1, _a, ptype, ast, _b, _c, rule, _d, groupingPolicyAST_1, _e, ptype, ast, _f, _g, rule, _h, err_3;
-            return __generator(this, function (_j) {
-                switch (_j.label) {
+            var lines, policyRuleAST, groupingPolicyAST, CasbinRule, _i, policyRuleAST_1, _a, ptype, ast, _b, _c, rule, _d, groupingPolicyAST_1, _e, ptype, ast, _f, _g, rule, err_3;
+            return __generator(this, function (_h) {
+                switch (_h.label) {
                     case 0:
-                        _j.trys.push([0, 3, , 4]);
+                        _h.trys.push([0, 2, , 3]);
                         lines = [];
                         policyRuleAST = model.model.get('p') instanceof Map ? model.model.get('p') : new Map();
                         groupingPolicyAST = model.model.get('g') instanceof Map ? model.model.get('g') : new Map();
@@ -182,20 +176,15 @@ var CasbinMongooseAdapter = /** @class */ (function () {
                                 lines.push(this.newDbModelLine(ptype, rule));
                             }
                         }
-                        _h = lines.length;
-                        if (!_h) return [3 /*break*/, 2];
                         return [4 /*yield*/, CasbinRule.collection.insertMany(lines)];
                     case 1:
-                        _h = (_j.sent());
-                        _j.label = 2;
+                        _h.sent();
+                        return [3 /*break*/, 3];
                     case 2:
-                        _h;
-                        return [3 /*break*/, 4];
-                    case 3:
-                        err_3 = _j.sent();
+                        err_3 = _h.sent();
                         console.error(err_3);
                         return [2 /*return*/, false];
-                    case 4: return [2 /*return*/, true];
+                    case 3: return [2 /*return*/, true];
                 }
             });
         });
@@ -230,7 +219,7 @@ var CasbinMongooseAdapter = /** @class */ (function () {
         casbin_1.Helper.loadPolicyLine(lineText, model);
     };
     CasbinMongooseAdapter.prototype.newDbModelLine = function (ptype, rule) {
-        var dbModelConstructor = this.getDbModel(this.collectionName);
+        var dbModelConstructor = this.getConnection().model(this.collectionName);
         return new dbModelConstructor({
             p_type: ptype,
             v0: rule[0] || '',
