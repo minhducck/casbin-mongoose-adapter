@@ -10,7 +10,6 @@ import {
   ICasbinRule,
   ICasbinRuleDocument, ICasbinRuleModel
 } from "./interface/casbin-rule.interface";
-import {CasbinRuleSchema} from "./schema/casbin-rule.schema";
 import objectHash from 'object-hash'
 
 export class CasbinMongooseAdapter implements Adapter {
