@@ -1,6 +1,6 @@
 {
   "name": "casbin-mongoose",
-  "version": "1.0.6.1",
+  "version": "1.0.7",
   "description": "Casbin Adapters for Mongoose",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,8 +13,8 @@
   "prepublish": "tsc",
   "dependencies": {
     "casbin": "^5.7.0",
-    "object-hash": "^2.2.0",
     "mongoose": "^5.12.0",
+    "object-hash": "^2.2.0",
     "typescript": "^4.3.2"
   },
   "devDependencies": {
