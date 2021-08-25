@@ -1,7 +1,6 @@
 import {Document, model, Schema} from "mongoose"
 const Types = Schema.Types
-
-export const CasbinRuleSchema = new Schema({
+export const CasbinRuleMongooseSchemaDeclaration = {
   p_type: {
     type: Types.String,
     required: true,
@@ -31,7 +30,10 @@ export const CasbinRuleSchema = new Schema({
     type: Types.String,
     index: true
   }
-}, {
+}
+
+export const CasbinRuleSchema = new Schema(
+  CasbinRuleMongooseSchemaDeclaration, {
   collection: 'CasbinRule',
   minimize: false,
   timestamps: false

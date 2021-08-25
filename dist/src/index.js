@@ -58,7 +58,7 @@ var CasbinMongooseAdapter = /** @class */ (function () {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            return object_hash_1.default(args);
+            return object_hash_1.default(JSON.stringify(args));
         };
         this.getDbModel = function (name) {
             return _this.getConnection().model(name);

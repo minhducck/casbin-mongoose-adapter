@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CasbinRuleSchema = void 0;
+exports.CasbinRuleSchema = exports.CasbinRuleMongooseSchemaDeclaration = void 0;
 var mongoose_1 = require("mongoose");
 var Types = mongoose_1.Schema.Types;
-exports.CasbinRuleSchema = new mongoose_1.Schema({
+exports.CasbinRuleMongooseSchemaDeclaration = {
     p_type: {
         type: Types.String,
         required: true,
@@ -33,7 +33,8 @@ exports.CasbinRuleSchema = new mongoose_1.Schema({
         type: Types.String,
         index: true
     }
-}, {
+};
+exports.CasbinRuleSchema = new mongoose_1.Schema(exports.CasbinRuleMongooseSchemaDeclaration, {
     collection: 'CasbinRule',
     minimize: false,
     timestamps: false
