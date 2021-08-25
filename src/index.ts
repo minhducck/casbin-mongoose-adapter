@@ -32,7 +32,7 @@ export class CasbinMongooseAdapter implements Adapter {
   }
 
   private resolveStoreKey = (...args: any[]): string => {
-    return objectHash(args);
+    return objectHash(JSON.stringify(args));
   }
 
   async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
