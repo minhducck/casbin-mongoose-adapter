@@ -77,18 +77,17 @@ var CasbinMongooseAdapter = /** @class */ (function () {
             return false;
         };
         this.addPolicies = function (sec, ptype, rules) { return __awaiter(_this, void 0, void 0, function () {
-            var policies, col, batch, dbDocumentConstructor, _i, policies_1, policy;
+            var policies, dbDocumentConstructor, dbModels, _i, policies_1, policy;
             var _this = this;
             return __generator(this, function (_a) {
                 policies = rules.map(function (rule) { return _this.addToCacheStorageIfNotExist(sec, ptype, rule); }).filter(function (policy) { return policy; });
-                col = this.getConnection().db.collection(this.collectionName);
-                batch = col.initializeUnorderedBulkOp();
                 dbDocumentConstructor = this.getDbModel(this.collectionName);
+                dbModels = [];
                 for (_i = 0, policies_1 = policies; _i < policies_1.length; _i++) {
                     policy = policies_1[_i];
-                    batch.insert(new dbDocumentConstructor(policy));
+                    dbModels.push(new dbDocumentConstructor(policy));
                 }
-                return [2 /*return*/, batch.execute()];
+                return [2 /*return*/, dbDocumentConstructor.insertMany(dbModels)];
             });
         }); };
         this.getDbModel = function (name) {

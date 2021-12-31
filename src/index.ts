@@ -71,16 +71,14 @@ export class CasbinMongooseAdapter implements Adapter {
 
   addPolicies = async (sec: string, ptype: string, rules: string[][]) => {
     const policies = rules.map(rule => this.addToCacheStorageIfNotExist(sec, ptype, rule)).filter(policy => policy);
-    const col = this.getConnection().db.collection(this.collectionName);
-    const batch = col.initializeUnorderedBulkOp();
 
     const dbDocumentConstructor: ICasbinRuleModel = this.getDbModel(this.collectionName)
-
+    const dbModels = []
     for (const policy of policies) {
-      batch.insert(new dbDocumentConstructor(policy))
+      dbModels.push(new dbDocumentConstructor(policy))
     }
 
-    return batch.execute()
+    return dbDocumentConstructor.insertMany(dbModels)
   }
 
   async loadPolicy(model: Model) {

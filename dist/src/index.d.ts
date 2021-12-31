@@ -14,7 +14,7 @@ export declare class CasbinMongooseAdapter implements Adapter {
     private resolveStoreKey;
     private addToCacheStorageIfNotExist;
     addPolicy(sec: string, ptype: string, rule: string[]): Promise<void>;
-    addPolicies: (sec: string, ptype: string, rules: string[][]) => Promise<import("mongodb").BulkWriteResult>;
+    addPolicies: (sec: string, ptype: string, rules: string[][]) => Promise<import("mongoose").Document<ICasbinRule, any>[]>;
     loadPolicy(model: Model): Promise<void>;
     removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<void>;
     removePolicy(sec: string, ptype: string, rule: string[]): Promise<void>;
