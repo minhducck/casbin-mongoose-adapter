@@ -35,9 +35,8 @@ export class CasbinMongooseAdapter implements Adapter {
     return objectHash(JSON.stringify(args));
   }
 
-  async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
+  private addToCacheStorageIfNotExist = (sec: string, ptype: string, rule: string[]) => {
     const key = this.resolveStoreKey(sec, ptype, rule);
-
     if (this.policiesStorage[key] === undefined) {
       this.policiesStorage[key] = {
         p_type: ptype,
@@ -49,9 +48,17 @@ export class CasbinMongooseAdapter implements Adapter {
         v5: rule[5] || '',
       };
 
+      return this.policiesStorage[key]
+    }
+    return false
+  }
+
+  async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
+    const policy = this.addToCacheStorageIfNotExist(sec, ptype, rule)
+    if (policy) {
       try {
         const dbDocumentConstructor: ICasbinRuleModel = this.getDbModel(this.collectionName)
-        const dbDocument = new dbDocumentConstructor(this.policiesStorage[key]);
+        const dbDocument = new dbDocumentConstructor(policy);
         await dbDocument.save();
 
       } catch (err) {
@@ -60,6 +67,20 @@ export class CasbinMongooseAdapter implements Adapter {
     }
 
     return Promise.resolve();
+  }
+
+  addPolicies = async (sec: string, ptype: string, rules: string[][]) => {
+    const policies = rules.map(rule => this.addToCacheStorageIfNotExist(sec, ptype, rule)).filter(policy => policy);
+    const col = this.getConnection().db.collection(this.collectionName);
+    const batch = col.initializeUnorderedBulkOp();
+
+    const dbDocumentConstructor: ICasbinRuleModel = this.getDbModel(this.collectionName)
+
+    for (const policy of policies) {
+      batch.insert(new dbDocumentConstructor(policy))
+    }
+
+    return batch.execute()
   }
 
   async loadPolicy(model: Model) {

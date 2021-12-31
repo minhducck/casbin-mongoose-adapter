@@ -12,7 +12,9 @@ export declare class CasbinMongooseAdapter implements Adapter {
      **/
     constructor(uri: string, connectionOptions: ConnectOptions, collectionName: string | undefined, connection: MongooseConnection | null);
     private resolveStoreKey;
+    private addToCacheStorageIfNotExist;
     addPolicy(sec: string, ptype: string, rule: string[]): Promise<void>;
+    addPolicies: (sec: string, ptype: string, rules: string[][]) => Promise<import("mongodb").BulkWriteResult>;
     loadPolicy(model: Model): Promise<void>;
     removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<void>;
     removePolicy(sec: string, ptype: string, rule: string[]): Promise<void>;

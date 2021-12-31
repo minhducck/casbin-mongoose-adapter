@@ -60,6 +60,37 @@ var CasbinMongooseAdapter = /** @class */ (function () {
             }
             return object_hash_1.default(JSON.stringify(args));
         };
+        this.addToCacheStorageIfNotExist = function (sec, ptype, rule) {
+            var key = _this.resolveStoreKey(sec, ptype, rule);
+            if (_this.policiesStorage[key] === undefined) {
+                _this.policiesStorage[key] = {
+                    p_type: ptype,
+                    v0: rule[0] || '',
+                    v1: rule[1] || '',
+                    v2: rule[2] || '',
+                    v3: rule[3] || '',
+                    v4: rule[4] || '',
+                    v5: rule[5] || '',
+                };
+                return _this.policiesStorage[key];
+            }
+            return false;
+        };
+        this.addPolicies = function (sec, ptype, rules) { return __awaiter(_this, void 0, void 0, function () {
+            var policies, col, batch, dbDocumentConstructor, _i, policies_1, policy;
+            var _this = this;
+            return __generator(this, function (_a) {
+                policies = rules.map(function (rule) { return _this.addToCacheStorageIfNotExist(sec, ptype, rule); }).filter(function (policy) { return policy; });
+                col = this.getConnection().db.collection(this.collectionName);
+                batch = col.initializeUnorderedBulkOp();
+                dbDocumentConstructor = this.getDbModel(this.collectionName);
+                for (_i = 0, policies_1 = policies; _i < policies_1.length; _i++) {
+                    policy = policies_1[_i];
+                    batch.insert(new dbDocumentConstructor(policy));
+                }
+                return [2 /*return*/, batch.execute()];
+            });
+        }); };
         this.getDbModel = function (name) {
             return _this.getConnection().model(name);
         };
@@ -68,26 +99,17 @@ var CasbinMongooseAdapter = /** @class */ (function () {
     }
     CasbinMongooseAdapter.prototype.addPolicy = function (sec, ptype, rule) {
         return __awaiter(this, void 0, void 0, function () {
-            var key, dbDocumentConstructor, dbDocument, err_1;
+            var policy, dbDocumentConstructor, dbDocument, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        key = this.resolveStoreKey(sec, ptype, rule);
-                        if (!(this.policiesStorage[key] === undefined)) return [3 /*break*/, 4];
-                        this.policiesStorage[key] = {
-                            p_type: ptype,
-                            v0: rule[0] || '',
-                            v1: rule[1] || '',
-                            v2: rule[2] || '',
-                            v3: rule[3] || '',
-                            v4: rule[4] || '',
-                            v5: rule[5] || '',
-                        };
+                        policy = this.addToCacheStorageIfNotExist(sec, ptype, rule);
+                        if (!policy) return [3 /*break*/, 4];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
                         dbDocumentConstructor = this.getDbModel(this.collectionName);
-                        dbDocument = new dbDocumentConstructor(this.policiesStorage[key]);
+                        dbDocument = new dbDocumentConstructor(policy);
                         return [4 /*yield*/, dbDocument.save()];
                     case 2:
                         _a.sent();
