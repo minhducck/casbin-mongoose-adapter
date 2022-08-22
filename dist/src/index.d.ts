@@ -7,6 +7,7 @@ export declare class CasbinMongooseAdapter implements Adapter {
     private readonly connection;
     private readonly collectionName;
     isFiltered: boolean;
+    private cachedLines;
     /**
      * Can use with custom initialized Mongoose Connection.
      **/

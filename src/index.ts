@@ -17,6 +17,7 @@ export class CasbinMongooseAdapter implements Adapter {
   private readonly connection: MongooseConnection | null;
   private readonly collectionName: string = 'casbin-rule';
   public isFiltered: boolean = false
+  private cachedLines = {};
 
   /**
    * Can use with custom initialized Mongoose Connection.
@@ -157,13 +158,30 @@ export class CasbinMongooseAdapter implements Adapter {
   }
 
   async loadFilteredPolicy(model: Model, filter: FilterQuery<ICasbinRuleDocument> | null) {
-    const dbModel = this.getDbModel(this.collectionName);
+    if (this.isFiltered) {
+      return;
+    }
 
-    const lines = await dbModel.find(filter || {}).exec();
+    const dbModel = this.getDbModel(this.collectionName);
+    const mongoFilter = filter || {};
+    const key = objectHash(mongoFilter)
+    if (!Object.keys(this.cachedLines).includes(key)) {
+      // @ts-ignore
+      this.cachedLines[key] = await dbModel.find(mongoFilter).exec();
+    }
+
+    // @ts-ignore
+    const lines = this.cachedLines[key];
 
     for (const line of lines) {
       this.loadPolicyLine(line.toObject<ICasbinRule>(), model);
     }
+
+    // @ts-ignore
+    if (mongoFilter.length === 0 || Object.keys(mongoFilter).lengthnpm === 0) {
+      this.isFiltered = true;
+    }
+
   }
 
   private getConnection(): MongooseConnection {

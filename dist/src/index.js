@@ -53,6 +53,7 @@ var CasbinMongooseAdapter = /** @class */ (function () {
         this.policiesStorage = {};
         this.collectionName = 'casbin-rule';
         this.isFiltered = false;
+        this.cachedLines = {};
         this.resolveStoreKey = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -223,17 +224,34 @@ var CasbinMongooseAdapter = /** @class */ (function () {
     };
     CasbinMongooseAdapter.prototype.loadFilteredPolicy = function (model, filter) {
         return __awaiter(this, void 0, void 0, function () {
-            var dbModel, lines, _i, lines_1, line;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var dbModel, mongoFilter, key, _a, _b, lines, _i, lines_1, line;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
+                        if (this.isFiltered) {
+                            return [2 /*return*/];
+                        }
                         dbModel = this.getDbModel(this.collectionName);
-                        return [4 /*yield*/, dbModel.find(filter || {}).exec()];
+                        mongoFilter = filter || {};
+                        key = object_hash_1.default(mongoFilter);
+                        if (!!Object.keys(this.cachedLines).includes(key)) return [3 /*break*/, 2];
+                        // @ts-ignore
+                        _a = this.cachedLines;
+                        _b = key;
+                        return [4 /*yield*/, dbModel.find(mongoFilter).exec()];
                     case 1:
-                        lines = _a.sent();
+                        // @ts-ignore
+                        _a[_b] = _c.sent();
+                        _c.label = 2;
+                    case 2:
+                        lines = this.cachedLines[key];
                         for (_i = 0, lines_1 = lines; _i < lines_1.length; _i++) {
                             line = lines_1[_i];
                             this.loadPolicyLine(line.toObject(), model);
+                        }
+                        // @ts-ignore
+                        if (mongoFilter.length === 0 || Object.keys(mongoFilter).lengthnpm === 0) {
+                            this.isFiltered = true;
                         }
                         return [2 /*return*/];
                 }
